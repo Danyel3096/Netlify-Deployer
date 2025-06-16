@@ -59,7 +59,7 @@ jobs:
 
       - name: Clonar plantilla Angular
         run: |
-          git clone https://github.com/mi-org/plantilla-angular.git plantilla
+          git clone https://x-access-token:${{ secrets.REPO_ACCESS_TOKEN }}@github.com/mi-org/plantilla-angular.git plantilla
 
       - name: Inyectar config.json
         run: |
