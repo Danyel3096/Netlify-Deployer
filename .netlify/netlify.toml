@@ -9,7 +9,6 @@ redirects = []
 [build]
 publish = "D:\\Daniel Melendez Ramirez\\Documents\\6 Desarrollo III\\Clase 16 Proyecto\\Calidad\\Netlify-Deployer"
 publishOrigin = "default"
-base = "D:\\Daniel Melendez Ramirez\\Documents\\6 Desarrollo III\\Clase 16 Proyecto\\Calidad\\Netlify-Deployer"
 
 [build.environment]
 
