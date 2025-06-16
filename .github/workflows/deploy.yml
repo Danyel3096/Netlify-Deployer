@@ -1,0 +1,92 @@
+name: Deploy tienda personalizada
+
+on:
+  workflow_dispatch:
+    inputs:
+      name:
+        required: true
+        type: string
+        description: 'Nombre de la tienda'
+      url:
+        required: true
+        type: string
+        description: 'URL de la tienda'
+      email:
+        required: true
+        type: string
+        description: 'Email de contacto'
+      contact:
+        required: true
+        type: string
+        description: 'Contacto de la tienda'
+      nit:
+        required: true
+        type: string
+        description: 'NIT'
+      logo:
+        required: true
+        type: string
+        description: 'URL del logo'
+      description:
+        required: true
+        type: string
+        description: 'Descripción de la tienda'
+      status:
+        required: true
+        type: string
+        description: 'Estado (activo/inactivo)'
+      address:
+        required: true
+        type: string
+        description: 'Dirección de la tienda'
+      themeJson:
+        required: true
+        type: string
+        description: 'JSON del tema personalizado (colores, fuentes, etc.)'
+
+jobs:
+  deploy:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout Netlify-Deployer repo
+        uses: actions/checkout@v3
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v3
+        with:
+          node-version: 18
+
+      - name: Clonar plantilla Angular
+        run: |
+          git clone https://github.com/mi-org/plantilla-angular.git plantilla
+
+      - name: Inyectar config.json
+        run: |
+          echo '{
+            "name": "${{ github.event.inputs.name }}",
+            "url": "${{ github.event.inputs.url }}",
+            "email": "${{ github.event.inputs.email }}",
+            "contact": "${{ github.event.inputs.contact }}",
+            "nit": "${{ github.event.inputs.nit }}",
+            "logo": "${{ github.event.inputs.logo }}",
+            "description": "${{ github.event.inputs.description }}",
+            "status": "${{ github.event.inputs.status }}",
+            "address": "${{ github.event.inputs.address }}"
+          }' > plantilla/src/assets/config.json
+
+      - name: Inyectar theme.json
+        run: |
+          echo '${{ github.event.inputs.themeJson }}' > plantilla/src/assets/theme.json
+
+      - name: Instalar dependencias y hacer build
+        run: |
+          cd plantilla
+          npm install
+          npm run build -- --configuration production
+
+      - name: Deploy a Netlify
+        run: |
+          cd plantilla
+          npm install -g netlify-cli
+          netlify deploy --dir=dist/plantilla --prod --auth=${{ secrets.NETLIFY_AUTH_TOKEN }} --site=${{ secrets.NETLIFY_SITE_ID }}
